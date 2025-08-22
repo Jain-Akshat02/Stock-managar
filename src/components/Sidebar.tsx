@@ -22,7 +22,7 @@ const Sidebar = ({ setActivePage, activePage }: SidebarProps) => {
         >
           <path d="M10 3.5a1.5 1.5 0 011.06.44l4.244 4.243a1.5 1.5 0 010 2.12l-4.244 4.243A1.5 1.5 0 0110 16.5v-2.5a.5.5 0 00-1 0v2.5a1.5 1.5 0 01-2.56.94l-4.244-4.243a1.5 1.5 0 010-2.12l4.244-4.243A1.5 1.5 0 019 3.5v2.5a.5.5 0 001 0V3.5z" />
         </svg>
-        <h1 className="text-2xl font-bold ml-2">KORVIN</h1>
+        <h1 className="text-2xl font-bold ml-2">Korvin</h1>
       </div>
       <nav className="flex-1">
         <ul>

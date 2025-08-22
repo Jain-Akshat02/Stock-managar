@@ -83,13 +83,20 @@ export const POST = async (req: NextRequest) => {
       });
       
       // 2. Update the Product's variant quantity
-      await Product.updateOne(
+      const res = await Product.updateOne(
         {
           _id: productId,
           "variants.size": entry.size,
+
         },
         { $inc: { "variants.$.quantity": entry.quantity } }
-      );
+      )
+      if(res.matchedCount === 0){
+        await Product.updateOne(
+          { _id: productId },
+          { $push: { variants: { size: entry.size, quantity: entry.quantity}}}
+        )
+      }
     }
   } catch (error: any) {
     console.log(error, error.message);

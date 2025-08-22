@@ -6,7 +6,7 @@ import Product from '@/models/productModel';
 import { cors, handleCors } from '@/lib/cors';
 
 
-connect();
+await connect();
 
 export async function GET(request: NextRequest) {
   // Handle CORS preflight

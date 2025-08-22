@@ -4,7 +4,7 @@ import Stock from "@/models/stockModel";
 import { NextRequest, NextResponse } from "next/server";
 import { cors, handleCors } from "@/lib/cors";
 
-connect();
+await connect();
 
 
 export const GET = async (req: NextRequest) => {
@@ -52,6 +52,7 @@ export const POST = async (req: NextRequest) => {
   try {
     const body = await req.json();
     const { name, category } = body;
+    
     // console.log(body);
     if (!name || !category) {
       return NextResponse.json(
@@ -61,13 +62,6 @@ export const POST = async (req: NextRequest) => {
         { status: 400 }
       );
     }
-    const sizeSets: Record<string, string[]> = {
-      Bras: ["28","30","32","34","36","38","40","42","44"],
-      Panties: ["S","M","L","XL","XXL","3XL","4XL"]
-    };
-    const variants = (sizeSets[category] || []).map(size=>({
-      size,quantity:0
-    }))
 
     const product = await Product.create({ name, category,variants });
     return NextResponse.json(
