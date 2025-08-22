@@ -61,7 +61,7 @@ const Inventory = () => {
       toast.success("Product added!");
       setIsModalOpen(false);
     } catch (error) {
-      toast.error("Failed to add product");
+      toast.error("Product already exists");
     }
   };
 

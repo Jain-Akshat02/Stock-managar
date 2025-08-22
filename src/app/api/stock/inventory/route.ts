@@ -62,6 +62,16 @@ export const POST = async (req: NextRequest) => {
         { status: 400 }
       );
     }
+    const existingProd = await Product.findOne({ name: { $regex: new RegExp(`^${name}$`, "i") } });
+    if(existingProd){
+      return NextResponse.json(
+        {
+          message: "Product already exists",
+        },
+        { status: 409 }
+      );
+    }
+    
     const sizeSets: Record<string, string[]> = {
       Bras: ["28","30","32","34","36","38","40","42","44"],
       Panties: ["S","M","L","XL","XXL","3XL","4XL"]
