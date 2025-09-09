@@ -45,7 +45,7 @@ const RecordSale = () => {
   useEffect(() => {
     const newQuantities: { [size: string]: string } = {};
     (SIZE_SETS[selectedCategory] || []).forEach((size) => {
-      newQuantities[size] = "";
+      newQuantities[size] = "0";
     });
     setSizeQuantities(newQuantities);
   }, [selectedCategory]);
@@ -70,6 +70,16 @@ const RecordSale = () => {
   const handleProductChange = (selectProduct: string) => {
     setSelectProductId(selectProduct);
   }
+
+  // Reset size quantities when product changes
+  useEffect(() => {
+    if (!selectProductId) return;
+    const newQuantities: { [size: string]: string } = {};
+    (SIZE_SETS[selectedCategory] || []).forEach((size) => {
+      newQuantities[size] = "0";
+    });
+    setSizeQuantities(newQuantities);
+  }, [selectProductId]);
 
   // Handle Enter key press to move to next input
   const handleKeyPress = (
@@ -279,12 +289,19 @@ const RecordSale = () => {
                                 className="w-full px-1 py-1 border border-gray-300 rounded-lg text-center text-gray-800 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent text-xs"
                                 placeholder="0"
                                 value={sizeQuantities[size] || ""}
-                                onChange={(e) =>
+                                onChange={(e) => {
+                                  const inputValue = e.target.value;
+                                  const normalized = inputValue === "" ? "" : inputValue.replace(/^0+(?=\d)/, "");
                                   setSizeQuantities((q) => ({
                                     ...q,
-                                    [size]: e.target.value,
-                                  }))
-                                }
+                                    [size]: normalized,
+                                  }));
+                                }}
+                                onFocus={(e) => {
+                                  if (e.currentTarget.value === "0") {
+                                    e.currentTarget.select();
+                                  }
+                                }}
                                 onKeyPress={(e) => handleKeyPress(e, size)}
                               />
                             </div>
@@ -292,6 +309,20 @@ const RecordSale = () => {
                         </div>
                       );
                     })}
+                    {/* Total card on the right of sizes */}
+                    <div className="flex-shrink-0 min-w-0">
+                      <div className="bg-white rounded-xl p-3 border border-gray-200 shadow-sm hover:shadow-md transition-shadow w-24 md:w-28">
+                        <div className="text-center space-y-2">
+                          <div className="text-xs text-gray-500">Total</div>
+                          <div className="text-2xl font-extrabold text-gray-900">
+                            {Object.values(sizeQuantities).reduce((sum, qty) => sum + (Number(qty) || 0), 0)}
+                          </div>
+                          <div className="text-[10px] md:text-xs font-bold text-gray-700 leading-tight">
+                            Total stock selected
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
