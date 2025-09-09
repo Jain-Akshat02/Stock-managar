@@ -317,9 +317,7 @@ const RecordSale = () => {
                           <div className="text-2xl font-extrabold text-gray-900">
                             {Object.values(sizeQuantities).reduce((sum, qty) => sum + (Number(qty) || 0), 0)}
                           </div>
-                          <div className="text-[10px] md:text-xs font-bold text-gray-700 leading-tight">
-                            Total stock selected
-                          </div>
+                          
                         </div>
                       </div>
                     </div>
