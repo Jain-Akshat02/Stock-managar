@@ -27,6 +27,16 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if (!localStorage.getItem('devAlertShown')) {
+                alert("🚧 अभी website में development चल रही है, कोई परेशानी आए तो Akshat को message करें 🚧");
+                localStorage.setItem('devAlertShown', 'true');
+              }
+            `,
+          }}
+        />
         <Toaster/>
         {children}
       </body>

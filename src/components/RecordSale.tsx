@@ -121,6 +121,27 @@ const RecordSale = () => {
       return;
     }
 
+    // Validate that sale quantities don't exceed available inventory
+    const validationErrors: string[] = [];
+    
+    for (const [size, qty] of Object.entries(sizeQuantities)) {
+      const quantity = Number(qty);
+      if (quantity > 0) {
+        const variant = selectedProduct?.variants.find((v: any) => v.size === size);
+        const availableQuantity = variant ? variant.quantity : 0;
+        
+        if (quantity > availableQuantity) {
+          validationErrors.push(`Size ${size}: Trying to sell ${quantity} but only ${availableQuantity} available`);
+        }
+      }
+    }
+
+    if (validationErrors.length > 0) {
+      toast.error("Cannot sell more than available stock!");
+      alert(`Sale validation failed:\n\n${validationErrors.join('\n')}\n\nPlease reload the page to get updated inventory levels.`);
+      return;
+    }
+
     setIsLoading(true);
     try {
       // Send all sale entries in one payload

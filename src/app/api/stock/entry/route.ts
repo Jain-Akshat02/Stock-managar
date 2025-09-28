@@ -19,31 +19,46 @@ export const POST = async (req: NextRequest) => {
     for (const saleEntry of sale) {
       const { size, quantity } = saleEntry;
       if (!productId || quantity == null) {
-        
-        return NextResponse.json({ message: "...." }, { status: 400 });
+        return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
       }
-      // Aggregate current stock for this product/variant
-      const stockEntries = await Stock.find({
-        product: productId,
-      });
-      // console.log(productId, stockEntries);
-      const currentStock = stockEntries.reduce((sum: number, entry: any) => sum + entry.quantity, 0);
-      if (currentStock < quantity) {
-        return NextResponse.json({ message: "Not enough stock!" }, { status: 400 });
+      
+      // Check if the specific size has enough inventory
+      const product = await Product.findById(productId);
+      if (!product) {
+        return NextResponse.json({ message: "Product not found" }, { status: 404 });
       }
+      
+      const variant = product.variants.find((v: any) => v.size === size);
+      const availableQuantity = variant ? variant.quantity : 0;
+      
+      if (quantity > availableQuantity) {
+        return NextResponse.json({ 
+          message: `Cannot sell ${quantity} items of size ${size}. Only ${availableQuantity} available. Please reload the page to get updated inventory levels.` 
+        }, { status: 400 });
+      }
+    }
+    
+    // If all validations pass, process the sales
+    for (const saleEntry of sale) {
+      const { size, quantity } = saleEntry;
+      
       // Record the sale as a negative stock entry
       await Stock.create({
         product: productId,
         quantity: -quantity,
         status: "stock out",
       });
-      // Also update Product's variant quantity
+      // Also update Product's variant quantity, ensuring it never goes below 0
+      const updatedProduct = await Product.findById(productId);
+      const variant = updatedProduct?.variants.find((v: any) => v.size === size);
+      const newQuantity = Math.max(0, (variant?.quantity || 0) - quantity);
+      
       await Product.updateOne(
         {
           _id: productId,
           "variants.size": size,
         },
-        { $inc: { "variants.$.quantity": -quantity } }
+        { $set: { "variants.$.quantity": newQuantity } }
       );
     }
     const response = NextResponse.json({ message: "Sale recorded successfully" }, { status: 201 });
@@ -211,7 +226,47 @@ export const PUT = async (req: NextRequest) => {
 
   try {
     const reqBody = await req.json();
-    const { productId } = reqBody;
+    const { productId, action } = reqBody;
+    
+    // Handle cleanup of negative stock values
+    if (action === "cleanup-negative-stock") {
+      const products = await Product.find({});
+      let cleanedCount = 0;
+      
+      for (const product of products) {
+        let needsUpdate = false;
+        const updatedVariants = product.variants.map((variant: any) => {
+          if (variant.quantity < 0) {
+            needsUpdate = true;
+            cleanedCount++;
+            return { ...variant.toObject(), quantity: 0 };
+          }
+          return variant;
+        });
+        
+        if (needsUpdate) {
+          await Product.findByIdAndUpdate(
+            product._id,
+            { variants: updatedVariants },
+            { new: true }
+          );
+        }
+      }
+      
+      const response = NextResponse.json({ 
+        message: `Cleaned up ${cleanedCount} negative stock values`,
+        cleanedCount 
+      }, { status: 200 });
+      
+      // Add CORS headers
+      Object.entries(cors(req)).forEach(([key, value]) => {
+        response.headers.set(key, value);
+      });
+      
+      return response;
+    }
+    
+    // Original functionality - clear all stock for a product
     console.log(productId);
     if(!productId){
       return NextResponse.json({ message: "Product ID is required" }, { status: 400 });
