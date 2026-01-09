@@ -159,6 +159,7 @@ export const GET = async (req: NextRequest) => {
     Object.entries(cors(req)).forEach(([key, value]) => {
       response.headers.set(key, value);
     });
+    //hello
     
     return response;
   } catch (error: any) {
