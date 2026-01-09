@@ -3,7 +3,7 @@ import ClientLayout from "@/components/ClientLayout";
 import Inventory from "@/components/Inventory";
 import type { NextPage } from 'next';
 
-const InventoryPage: NextPage = () => {
+const HistoryPage: NextPage = () => {
   return (
     // We wrap the Inventory component with ClientLayout to maintain the sidebar and header
     <ClientLayout>
@@ -12,4 +12,4 @@ const InventoryPage: NextPage = () => {
   );
 }
 
-export default InventoryPage;
+export default HistoryPage;
