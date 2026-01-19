@@ -1,3 +1,4 @@
+import { timeStamp } from "console";
 import mongoose from "mongoose";
 
 const stockSchema = mongoose.Schema({
@@ -16,7 +17,7 @@ const stockSchema = mongoose.Schema({
         type: String,
         required: false
     }
-});
+},{ timestamps: true});
 
 const Stock = mongoose.models.Stock || mongoose.model('Stock', stockSchema);
 export default Stock; 

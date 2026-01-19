@@ -89,15 +89,18 @@ export const POST = async (req: NextRequest) => {
     return response;
   }
   try {
-    for (const entry of stockEntries) {
+    
       // 1. Create a Stock document (history)
       await Stock.create({
         product: productId,
-        variants: [{ size: entry.size, quantity: entry.quantity}],
+        variants: stockEntries.map((entry: any) => ({
+          size: entry.size,
+          quantity: entry.quantity,
+        })),
         status: "stock in",
       });
       
-      // 2. Update the Product's variant quantity
+     for(const entry of stockEntries){ // 2. Update the Product's variant quantity
       const res = await Product.updateOne(
         {
           _id: productId,
@@ -111,8 +114,8 @@ export const POST = async (req: NextRequest) => {
           { _id: productId },
           { $push: { variants: { size: entry.size, quantity: entry.quantity}}}
         )
-      }
-    }
+      }}
+    
   } catch (error: any) {
     console.log(error, error.message);
     const response = NextResponse.json(
@@ -143,17 +146,25 @@ export const GET = async (req: NextRequest) => {
   if (corsResponse) return corsResponse;
 
   try {
-    const stocks = await Stock.find()
+    const stocksIn = await Stock.find({ status: "stock in" })
+      .select("product variants status createdAt")
       .populate({
         path: "product",
-        select:
-          "name category variants"
-        ,
+        select: "name category variants"
       })
-      .sort({ date: -1 });
-    // console.log("Fetched stocks:", stocks);
+      .sort({ createdAt: -1 })
+      .limit(10);
+      const stocksOut = await Stock.find({ status: "stock out" })
+      .select("product variants status createdAt")
+      .populate({
+        path: "product",
+        select: "name category variants"
+      })
+      .sort({ createdAt: -1 })
+      .limit(10);
+    console.log("Fetched stocks:", stocksIn,stocksOut);
     
-    const response = NextResponse.json(stocks, { status: 200 });
+    const response = NextResponse.json({stocksIn, stocksOut}, { status: 200 });
     
     // Add CORS headers
     Object.entries(cors(req)).forEach(([key, value]) => {
