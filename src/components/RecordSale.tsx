@@ -20,6 +20,7 @@ const RecordSale = () => {
   }>({});
   const [isLoading, setIsLoading] = useState(false);
   const [selectProductId, setSelectProductId] = useState("");
+  const [customerName, setCustomerName] = useState("");
   const [products, setProducts] = useState<any[]>([]);
   const router = useRouter();
   const inputRefs = useRef<{ [size: string]: HTMLInputElement | null }>({});
@@ -148,7 +149,8 @@ const RecordSale = () => {
       const payload = {
         productId: selectProductId,
         category: selectedCategory,
-        sale:saleEntries
+        sale:saleEntries,
+        customer: customerName
       };
       console.log(payload);
       await axios.post("/api/stock/entry", payload);
@@ -245,6 +247,13 @@ const RecordSale = () => {
                     </option>
                   ))}
                 </select>
+                <h2 className="text-sm font-semibold text-gray-700 mb-3">Customer Name:</h2>
+                <input
+                  type="text"
+                  placeholder="Customer Name"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                />
               </div>
             </div>
 

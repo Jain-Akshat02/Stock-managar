@@ -16,6 +16,10 @@ const stockSchema = mongoose.Schema({
     status: {
         type: String,
         required: false
+    },
+    customer: {
+        type: String,
+        required: false
     }
 },{ timestamps: true});
 

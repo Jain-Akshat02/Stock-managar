@@ -12,7 +12,7 @@ export const POST = async (req: NextRequest) => {
   if (corsResponse) return corsResponse;
 
   const reqBody = await req.json();
-  const { productId, stockEntries,sale} = reqBody;
+  const { productId, stockEntries,sale, customerName} = reqBody;
   if (sale) {
     // Sale mode: expects productId, size, mrp, quantity, notes
     
@@ -47,6 +47,7 @@ export const POST = async (req: NextRequest) => {
         product: productId,
         quantity: -quantity,
         status: "stock out",
+        customer: customerName || "Walk-in Customer",
       });
       // Also update Product's variant quantity, ensuring it never goes below 0
       const updatedProduct = await Product.findById(productId);
@@ -147,7 +148,7 @@ export const GET = async (req: NextRequest) => {
 
   try {
     const stocksIn = await Stock.find({ status: "stock in" })
-      .select("product variants status createdAt")
+      .select("product variants status createdAt customer")
       .populate({
         path: "product",
         select: "name category variants"
