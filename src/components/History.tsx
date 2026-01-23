@@ -32,7 +32,6 @@ const History = () => {
     console.log("Product:", entry.product);
     setSelectedEntry(entry);
   };
-  const groupByStockEntry = (entries: any[]) => {};
   const formatDate = (dateString: string | undefined, entryId?: string) => {
     // First try createdAt if it exists
     if (dateString) {
@@ -143,10 +142,32 @@ const History = () => {
             {/* Table header */}
             <div className="grid grid-cols-4 text-sm font-semibold border-b pb-2">
               <span>Product</span>
-              <span>Size</span>
-              <span>Qty</span>
               <span>Date</span>
             </div>
+            {stocksOut.length === 0 ? (
+                  <div className="text-center py-8 text-gray-400">
+                    <p>No stock additions yet</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {stocksOut.map((entry) => (
+                      <div
+                        key={entry._id}
+                        onClick={() => {
+                          openCard(entry);
+                        }}
+                        className="cursor-pointer hover:bg-green-50 p-3 rounded-lg border border-gray-100 hover:border-green-200 transition-all duration-200 grid grid-cols-2 gap-4 items-center"
+                      >
+                        <span className="text-sm font-medium text-gray-700">
+                          {formatDate(entry.createdAt, entry._id)}
+                        </span>
+                        <span className="text-sm font-semibold text-gray-900 truncate">
+                          {entry.product.name}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
             {/* Data rows will go here */}
             <div className="text-sm text-gray-400 mt-4">

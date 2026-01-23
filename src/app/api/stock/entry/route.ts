@@ -39,16 +39,20 @@ export const POST = async (req: NextRequest) => {
     }
     
     // If all validations pass, process the sales
+    await Stock.create({
+      product: productId,
+      // quantity: -quantity,
+      variants: sale.map((saleEntry: any) => ({
+        size: saleEntry.size,
+        quantity: saleEntry.quantity,
+      })),
+      status: "stock out",
+      customer: customerName || "Walk-in Customer",
+    });
     for (const saleEntry of sale) {
       const { size, quantity } = saleEntry;
       
       // Record the sale as a negative stock entry
-      await Stock.create({
-        product: productId,
-        quantity: -quantity,
-        status: "stock out",
-        customer: customerName || "Walk-in Customer",
-      });
       // Also update Product's variant quantity, ensuring it never goes below 0
       const updatedProduct = await Product.findById(productId);
       const variant = updatedProduct?.variants.find((v: any) => v.size === size);
@@ -156,7 +160,7 @@ export const GET = async (req: NextRequest) => {
       .sort({ createdAt: -1 })
       .limit(10);
       const stocksOut = await Stock.find({ status: "stock out" })
-      .select("product variants status createdAt")
+      .select("product variants status createdAt customer")
       .populate({
         path: "product",
         select: "name category variants"

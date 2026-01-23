@@ -16,10 +16,11 @@ export interface StockEntry {
   _id: string;
   product: Product;
   variants: Variant[];
-  quantity: number;
+  // quantity: number;
   date: Date;
   notes?: string;
   status?: string;
+  customer?: string;
 }
 
 export interface StockEntryInput {
