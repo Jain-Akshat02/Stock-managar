@@ -247,14 +247,21 @@ const RecordSale = () => {
                     </option>
                   ))}
                 </select>
-                <h2 className="text-sm font-semibold text-gray-700 mb-3">Customer Name:</h2>
-                <input
-                  type="text"
-                  placeholder="Customer Name"
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
-                />
               </div>
+            </div>
+
+            {/* Customer Name Input */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-3">
+                Customer Name
+              </label>
+              <input
+                type="text"
+                placeholder="Enter customer name (optional)"
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all"
+              />
             </div>
 
             {/* Selected Product Display */}

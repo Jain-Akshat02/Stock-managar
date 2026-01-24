@@ -17,6 +17,7 @@ type StockEntry = {
   }>;
   createdAt: string;
   status: string;
+  customer?: string;
 };
 const History = () => {
   const [stocksIn, setStocksIn] = useState<any[]>([]);
@@ -136,42 +137,45 @@ const History = () => {
             </div>
 
           {/* STOCK OUT SECTION */}
-          <div className="border rounded-lg p-4">
-            <h2 className="text-lg font-medium mb-4 text-red-600">Stock Out</h2>
-
-            {/* Table header */}
-            <div className="grid grid-cols-4 text-sm font-semibold border-b pb-2">
-              <span>Product</span>
-              <span>Date</span>
+          <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+            <div className="bg-gradient-to-r from-red-500 to-pink-600 px-6 py-4">
+              <h2 className="text-xl font-bold text-white flex items-center">
+                <span className="mr-2">📤</span>
+                Stock Out
+              </h2>
             </div>
-            {stocksOut.length === 0 ? (
-                  <div className="text-center py-8 text-gray-400">
-                    <p>No stock additions yet</p>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {stocksOut.map((entry) => (
-                      <div
-                        key={entry._id}
-                        onClick={() => {
-                          openCard(entry);
-                        }}
-                        className="cursor-pointer hover:bg-green-50 p-3 rounded-lg border border-gray-100 hover:border-green-200 transition-all duration-200 grid grid-cols-2 gap-4 items-center"
-                      >
-                        <span className="text-sm font-medium text-gray-700">
-                          {formatDate(entry.createdAt, entry._id)}
-                        </span>
-                        <span className="text-sm font-semibold text-gray-900 truncate">
-                          {entry.product.name}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                )}
 
-            {/* Data rows will go here */}
-            <div className="text-sm text-gray-400 mt-4">
-              Stock-out entries will appear here
+            <div className="p-4">
+              {/* Table header */}
+              <div className="grid grid-cols-2 gap-4 text-sm font-semibold text-gray-700 border-b-2 border-gray-200 pb-3 mb-2">
+                <span>Date</span>
+                <span>Product</span>
+              </div>
+
+              {stocksOut.length === 0 ? (
+                <div className="text-center py-8 text-gray-400">
+                  <p>No sales recorded yet</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {stocksOut.map((entry) => (
+                    <div
+                      key={entry._id}
+                      onClick={() => {
+                        openCard(entry);
+                      }}
+                      className="cursor-pointer hover:bg-red-50 p-3 rounded-lg border border-gray-100 hover:border-red-200 transition-all duration-200 grid grid-cols-2 gap-4 items-center"
+                    >
+                      <span className="text-sm font-medium text-gray-700">
+                        {formatDate(entry.createdAt, entry._id)}
+                      </span>
+                      <span className="text-sm font-semibold text-gray-900 truncate">
+                        {entry.product.name}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -210,12 +214,29 @@ const History = () => {
                   <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
-                  <span className="text-sm font-medium">Date Added</span>
+                  <span className="text-sm font-medium">
+                    {selectedEntry.status === "stock out" ? "Date Sold" : "Date Added"}
+                  </span>
                 </div>
                 <p className="text-lg font-semibold text-gray-900">
                   {formatDate(selectedEntry?.createdAt, selectedEntry?._id)}
                 </p>
               </div>
+
+              {/* Customer Section - Only for Sales */}
+              {selectedEntry.status === "stock out" && selectedEntry.customer && (
+                <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border border-purple-200">
+                  <div className="flex items-center text-gray-600 mb-1">
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    <span className="text-sm font-medium">Sold To</span>
+                  </div>
+                  <p className="text-lg font-semibold text-purple-700">
+                    {selectedEntry.customer}
+                  </p>
+                </div>
+              )}
 
               {/* Variants Section */}
               <div>
